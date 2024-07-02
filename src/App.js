@@ -1,15 +1,18 @@
-import "./styles.css";
+import './style.css'
 import React, { useEffect, useState } from "react";
-import { MapContainer, TileLayer, Polyline } from "react-leaflet";
-import { usePosition } from "./use-location";
+import {
+  MapContainer,
+  TileLayer,
+  Marker,
+  Polyline,
+  Popup
+} from "react-leaflet";
+import { usePosition } from "./user-location";
 
 export default function App() {
-  const [mapProps, setMapProps] = useState({
-    center: [19.075984, 72.877656],
-    zoom: 6
-  });
   const [trackData, setTrackData] = useState([]);
   const [polygonData, setPolygonData] = useState();
+  const initialPosition = [19.075984, 72.877656];
   const [isTracking, setIsTracking] = useState(false);
   const { position } = usePosition(isTracking);
 
@@ -17,7 +20,7 @@ export default function App() {
     if (isTracking && position) {
       setTrackData([...trackData, position]);
     }
-  }, [isTracking, position]);
+  },[position])
 
   const finishPolygon = () => {
     setPolygonData([...trackData, trackData[0]]);
@@ -26,32 +29,11 @@ export default function App() {
 
   return (
     <div>
-      <div className="mb">
-        <h2>
-          {isTracking ? "Tracking" : "Not Tracking"} ({trackData.length} Points)
-        </h2>
-      </div>
-      <div className="mb">
-        <button
-          class="pure-button mr"
-          disabled={isTracking}
-          onClick={() => setIsTracking(true)}
-        >
-          Start
-        </button>
-        <button
-          class="pure-button button-red mr"
-          disabled={!isTracking}
-          onClick={() => setIsTracking(false)}
-        >
-          Stop
-        </button>
-
-        <button className="pure-button mr" onClick={finishPolygon}>
-          Render as Polygon
-        </button>
-      </div>
-      <MapContainer {...mapProps} scrollWheelZoom={false}>
+      {isTracking ? "tracking" : "not tracking"}
+      <button onClick={() => setIsTracking(true)}>start</button>
+      <button onClick={() => setIsTracking(false)}>stop</button>
+      {/* <button onClick={finishPolygon}>render as polygon</button>*/}
+      <MapContainer center={initialPosition} zoom={6} scrollWheelZoom={false}> 
         <TileLayer
           attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
