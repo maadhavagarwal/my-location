@@ -1,25 +1,48 @@
-import logo from './logo.svg';
-import './App.css';
+import './style.css'
+import React, { useEffect, useState } from "react";
+import {
+  MapContainer,
+  TileLayer,
+  Marker,
+  Polyline,
+  Popup
+} from "react-leaflet";
+import { usePosition } from "./user-location";
 
-function App() {
+export default function App() {
+  const [trackData, setTrackData] = useState([]);
+  const [polygonData, setPolygonData] = useState();
+  const initialPosition = [19.075984, 72.877656];
+  const [isTracking, setIsTracking] = useState(false);
+  const { position } = usePosition(isTracking);
+
+  useEffect(() => {
+    if (isTracking && position) {
+      setTrackData([...trackData, position]);
+    }
+  },[position])
+
+  const finishPolygon = () => {
+    setPolygonData([...trackData, trackData[0]]);
+    setTrackData([]);
+  };
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      {isTracking ? "tracking" : "not tracking"}
+      <button onClick={() => setIsTracking(true)}>start</button>
+      <button onClick={() => setIsTracking(false)}>stop</button>
+      {/* <button onClick={finishPolygon}>render as polygon</button>*/}
+      <MapContainer center={initialPosition} zoom={6} scrollWheelZoom={false}> 
+        <TileLayer
+          attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+        />
+        <Polyline pathOptions={{ color: "blue" }} positions={trackData} />
+        {polygonData && (
+          <Polyline pathOptions={{ color: "purple" }} positions={polygonData} />
+        )}
+      </MapContainer>
     </div>
   );
 }
-
-export default App;

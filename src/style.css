@@ -1,0 +1,16 @@
+@import url("https://unpkg.com/leaflet@1.7.1/dist/leaflet.css");
+
+.App {
+  font-family: sans-serif;
+  text-align: center;
+}
+
+.leaflet-container {
+  height: 600px;
+  width: 100%;
+}
+
+.leaflet-div-icon {
+  background: transparent;
+  border: none;
+}
